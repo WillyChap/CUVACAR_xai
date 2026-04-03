@@ -1,0 +1,12 @@
+STopping point: 
+
+We are making IntegratedGradients_Climo_Baseline.py to accept our baselines and input initial condtions. 
+
+
+baseline: /glade/derecho/scratch/wchapman/CUVACAR/init_ ...baseline.nc
+inits: /glade/derecho/scratch/wchapman/CUVACAR/init_b2014....nc
+
+
+Next time: 
+
+figure out how to use the chunked integrated gradients function! 
