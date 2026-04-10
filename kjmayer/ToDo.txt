@@ -1,12 +1,19 @@
 STopping point: 
 
-We are making IntegratedGradients_Climo_Baseline.py to accept our baselines and input initial condtions. 
+Kir ran:
+python IntegratedGradients_Climo_Baseline.py --config camulator_config.yml --input_shape 1 138 1 192 288 --forcing_shape 1 4 1 192 288 --output_shape 1 145 1 192 288 --device cuda --model_name checkpoint.pt00091.pt --init_tensor /glade/derecho/scratch/wchapman/CUVACAR/init_b2014_1981-06-20_00_00_00_be21_condition_tensor.pth --baseline_tensor /glade/derecho/scratch/wchapman/CUVACAR/init_1981-06-20_00_00_00_be21_condition_tensor_baseline.pth
+
+Saved results here:
+/glade/derecho/scratch/kjmayer/CUVACAR_xai/IG/
 
 
 baseline: /glade/derecho/scratch/wchapman/CUVACAR/init_ ...baseline.nc
-inits: /glade/derecho/scratch/wchapman/CUVACAR/init_b2014....nc
+inits: /glade/derecho/scratch/kjmayer/CUVACAR_xai/init_b2014....nc
 
 
 Next time: 
+shell script to run through all the dates (runxai_basline.sh)!
 
-figure out how to use the chunked integrated gradients function! 
+
+Environment for scripts:
+conda activate /glade/work/wchapman/conda-envs/credit-coupling

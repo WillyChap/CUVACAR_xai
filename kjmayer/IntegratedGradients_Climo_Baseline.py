@@ -163,6 +163,9 @@ def integrated_gradients_chunked(x, model, target, num_steps=50, step_chunk=12, 
     if baseline is None:
         baseline = torch.zeros_like(x)
 
+    baseline = torch.load(baseline, map_location=torch.device(device)).to(device)
+    # baseline = torch.tensor(baseline).to(device)
+
     lev, var_idx, lat, lon = target
     dx = (x - baseline)
 
@@ -303,7 +306,7 @@ def run_year_rmse(p, config, input_shape, forcing_shape, output_shape, device, m
     model.eval()
 
     x = torch.load(init_tensor, map_location=torch.device(device)).to(device)
-
+    
     if init_noise is not None:
         print('adding forecast noise')
         # Define the standard deviation for the noise (e.g., 0.01)
@@ -337,19 +340,38 @@ def run_year_rmse(p, config, input_shape, forcing_shape, output_shape, device, m
     start_time = time.perf_counter()
     device = 'cuda'
 
-    ## add for loop here: 
-
-
+    # (after loading model and x)
+    targets = []
+    lats = [16,42,69,96,122,149,175]
+    lons = [0,48,96,144,192,240]
+    levs = [14,20,25]
     
-
-    out_vec_zeros = model(x)
-
-    arr = out_vec_zeros.detach().cpu().numpy()
-    np.save(
-            f"/glade/derecho/scratch/wchapman/sphereofinf/tensor_zeros_prediction.npy",
+    for lat_ in lats:
+        for lon_ in lons:
+            for lev_ in levs:
+                targets.append((lev_, 0, lat_, lon_))
+    
+    # better timing for CUDA
+    torch.cuda.synchronize()
+    t0 = time.perf_counter()
+    
+    for (lev_, var_, lat_, lon_) in targets:
+        ig = integrated_gradients_chunked(
+            x, model,
+            target=(lev_, var_, lat_, lon_),
+            num_steps=24,
+            step_chunk=8,   # try 8, 16 if you have memory
+            baseline=baseline_tensor,
+        )
+    
+        arr = ig.detach().cpu().numpy()
+        np.save(
+            f"/glade/derecho/scratch/kjmayer/CUVACAR_xai/IG/tensor_24_parrallel_lev{lev_:05}_lat{lat_:05}_lon{lon_:05}.npy",
             arr
         )
-
+    
+    torch.cuda.synchronize()
+    print(f"Total elapsed: {time.perf_counter() - t0:.2f} s")
     
     return arr
 
@@ -397,7 +419,7 @@ def main():
     end_time = time.time()
     elapsed_time = end_time - start_time
     # How to run:
-    # python IntegratedGradients_zeros.py --config camulator_config.yml --input_shape 1 138 1 192 288 --forcing_shape 1 4 1 192 288 --output_shape 1 145 1 192 288 --device cuda --model_name checkpoint.pt00091.pt
+    # python IntegratedGradients_Climo_Baseline.py --config camulator_config.yml --input_shape 1 138 1 192 288 --forcing_shape 1 4 1 192 288 --output_shape 1 145 1 192 288 --device cuda --model_name checkpoint.pt00091.pt --init_tensor /glade/derecho/scratch/wchapman/CUVACAR/init_b2014_1981-06-20_00_00_00_be21_condition_tensor.pth --baseline_tensor /glade/derecho/scratch/wchapman/CUVACAR/init_1981-06-20_00_00_00_be21_condition_tensor_baseline.pth
     print(f"Run completed. Results saved to configured location. Elapsed time: {elapsed_time:.2f} seconds")
     print(f"Run completed. Results saved to configured location. Elapsed time: {elapsed_time/60:.2f} minutes")
 
