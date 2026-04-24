@@ -271,7 +271,7 @@ def shift_input_for_next(x, y_pred, history_len, varnum_diag, static_dim):
 
 
 
-def run_year_rmse(p, config, input_shape, forcing_shape, output_shape, device, model_name=None, init_noise=None, save_append=None, init_tensor=None, baseline_tensor=None):
+def run_year_rmse(p, config, input_shape, forcing_shape, output_shape, device, model_name=None, init_noise=None, save_append=None, init_tensor=None, baseline_tensor=None, save_path=None):
     # Load and parse configuration
     with open(config) as cf:
         conf = yaml.load(cf, Loader=yaml.FullLoader)
@@ -349,7 +349,7 @@ def run_year_rmse(p, config, input_shape, forcing_shape, output_shape, device, m
     for lat_ in lats:
         for lon_ in lons:
             for lev_ in levs:
-                targets.append((lev_, 0, lat_, lon_))
+                targets.append((lev_, 0, lat_, lon_)) # var = 0 = first variable at that level, lat, and lon = 'U'
     
     # better timing for CUDA
     torch.cuda.synchronize()
@@ -366,7 +366,7 @@ def run_year_rmse(p, config, input_shape, forcing_shape, output_shape, device, m
     
         arr = ig.detach().cpu().numpy()
         np.save(
-            f"/glade/derecho/scratch/kjmayer/CUVACAR_xai/IG/tensor_24_parrallel_lev{lev_:05}_lat{lat_:05}_lon{lon_:05}.npy",
+            f"{save_path}tensor_steps24_parrallel_lev{lev_:05}_lat{lat_:05}_lon{lon_:05}.npy",
             arr
         )
     
@@ -389,6 +389,7 @@ def main():
     parser.add_argument('--save_append', type=str, default=None, help='append a folder to the output to save to')
     parser.add_argument('--init_tensor', type=str, default=None, help='path to initial condition')
     parser.add_argument('--baseline_tensor', type=str, default=None, help='path to baseline')
+    parser.add_argument('--IGsave_path', type=str, default=None, help='path to save IG')
 
     args = parser.parse_args()
 
@@ -414,7 +415,8 @@ def main():
         init_noise=args.init_noise,
         save_append=args.save_append, 
         init_tensor=args.init_tensor,
-        baseline_tensor=args.baseline_tensor)
+        baseline_tensor=args.baseline_tensor,
+                     save_path = args.IGsave_path)
 
     end_time = time.time()
     elapsed_time = end_time - start_time

@@ -1,9 +1,12 @@
 STopping point: 
 
-Kir ran:
-python IntegratedGradients_Climo_Baseline.py --config camulator_config.yml --input_shape 1 138 1 192 288 --forcing_shape 1 4 1 192 288 --output_shape 1 145 1 192 288 --device cuda --model_name checkpoint.pt00091.pt --init_tensor /glade/derecho/scratch/wchapman/CUVACAR/init_b2014_1981-06-20_00_00_00_be21_condition_tensor.pth --baseline_tensor /glade/derecho/scratch/wchapman/CUVACAR/init_1981-06-20_00_00_00_be21_condition_tensor_baseline.pth
+Kirsten:
+wrote script to loop through all DOY inits to calculate IG for all lev, lat, lons (runxai_baseline.sh)
 
-Saved results here:
+Will:
+looked at results for U at 500hPa and saw cool T vertical profiles
+
+Saved IG results here:
 /glade/derecho/scratch/kjmayer/CUVACAR_xai/IG/
 
 
@@ -12,7 +15,7 @@ inits: /glade/derecho/scratch/kjmayer/CUVACAR_xai/init_b2014....nc
 
 
 Next time: 
-shell script to run through all the dates (runxai_basline.sh)!
+look at all the U IG results!
 
 
 Environment for scripts:
