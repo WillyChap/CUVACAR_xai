@@ -20,3 +20,6 @@ look at all the U IG results!
 
 Environment for scripts:
 conda activate /glade/work/wchapman/conda-envs/credit-coupling
+
+
+Note: init conditions are from 2014.... ignore the 1981 tag. 
