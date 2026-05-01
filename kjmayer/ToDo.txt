@@ -1,10 +1,6 @@
 STopping point: 
 
-Kirsten:
-wrote script to loop through all DOY inits to calculate IG for all lev, lat, lons (runxai_baseline.sh)
-
-Will:
-looked at results for U at 500hPa and saw cool T vertical profiles
+looked at results for U, but saw we used non-standardized inits by accident. Kirsten is re-running runxai_baseline.sh
 
 Saved IG results here:
 /glade/derecho/scratch/kjmayer/CUVACAR_xai/IG/
@@ -15,7 +11,7 @@ inits: /glade/derecho/scratch/kjmayer/CUVACAR_xai/init_b2014....nc
 
 
 Next time: 
-look at all the U IG results!
+look at all the corrected/standardized U IG results!
 
 
 Environment for scripts:

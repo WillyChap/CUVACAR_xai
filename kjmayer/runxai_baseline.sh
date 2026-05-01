@@ -1,4 +1,10 @@
 #!/bin/bash -l
+#PBS -N IGrun
+#PBS -l select=1:mem=64GB:ncpus=4
+#PBS -l walltime=12:00:00
+#PBS -A P06010014
+#PBS -q casper@casper-pbs
+#PBS -o logs/pregen_^array_index^.log
 
 module load conda
 conda activate /glade/work/wchapman/conda-envs/credit-coupling
@@ -22,7 +28,7 @@ while [[ $(date -d "$current_date" +%s) -le $(date -d "$end_date" +%s) ]]; do
         --output_shape 1 145 1 192 288 \
         --device cuda \
         --model_name checkpoint.pt00091.pt \
-        --init_tensor /glade/derecho/scratch/wchapman/CUVACAR/init_b2014_${date_str}_00_00_00_be21_condition_tensor.pth \
+        --init_tensor /glade/derecho/scratch/kjmayer/CUVACAR_xai/init_b2014_${date_str}_00_00_00_be21_condition_tensor.pth \
         --baseline_tensor /glade/derecho/scratch/wchapman/CUVACAR/init_${date_str}_00_00_00_be21_condition_tensor_baseline.pth \
         --IGsave_path /glade/derecho/scratch/kjmayer/CUVACAR_xai/IG/${date_str}/
 
