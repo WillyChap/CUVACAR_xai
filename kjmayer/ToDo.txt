@@ -18,4 +18,12 @@ Environment for scripts:
 conda activate /glade/work/wchapman/conda-envs/credit-coupling
 
 
-Note: init conditions are from 2014.... ignore the 1981 tag. 
+Note: init conditions are from 2014.... ignore the 1981 tag.
+
+** North Pacific IG's **
+
+1) Uwinds make sense. Local upstream winds help to determine whether wind speeds will increase or decrease. There is 1 dominant mode explaining 95% of the variance. 
+2) Temp is still a mystery. there exists a dipole upstream and downstream 
+
+TODO: 
+stack so that space collapses on one axis and time collapses on the other... take principal compoenents in those directions. 
