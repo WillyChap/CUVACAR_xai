@@ -1,21 +1,29 @@
-STopping point: 
+What we did on 15 May:
+--> calculated EOF1 of Temperature for levxlatxlon for all of January & plotted horizontal and vertical maps
+--> changed point of interest to: 25Nx60E
+--> moved new EOF analysis to EOFanalysis/initialEOFanalysis.ipynb
+----> eventually we will need to create some loops around this code.
 
-looked at results for U, but saw we used non-standardized inits by accident. Kirsten is re-running runxai_baseline.sh
+To Do: 
+--> In LookAtOutput.ipynb, when we compare how U evolves in the prediction, we need to switch the 06Z inits to 06Z prediction!
+--> Make sure IG satisfies completeness property
+--> need prediction of 06Z and baseline prediction
 
-Saved IG results here:
-/glade/derecho/scratch/kjmayer/CUVACAR_xai/IG/
+--> Loop through all locations, seasons (or months), & key variables (e.g. T, U , V) 
+----> save out how much EOF1 & EOF2 explain
+----> calculate tilt of dipole
+----> find creative ways to show spatial and vertical maps of all these combinations (for example, put all EOF1 on one spatial plot!)
 
+Innovation that our paper provides:
+-> variant baseline
+-> first XAI analysis of an emulator
+-> physical analysis of XAI
 
+IG: /glade/derecho/scratch/kjmayer/CUVACAR_xai/IG/
 baseline: /glade/derecho/scratch/wchapman/CUVACAR/init_ ...baseline.nc
 inits: /glade/derecho/scratch/kjmayer/CUVACAR_xai/init_b2014....nc
 
-
-Next time: 
-look at all the corrected/standardized U IG results!
-
-
-Environment for scripts:
-conda activate /glade/work/wchapman/conda-envs/credit-coupling
+Environment for scripts: conda activate /glade/work/wchapman/conda-envs/credit-coupling
 
 
 Note: init conditions are from 2014.... ignore the 1981 tag.
@@ -24,6 +32,3 @@ Note: init conditions are from 2014.... ignore the 1981 tag.
 
 1) Uwinds make sense. Local upstream winds help to determine whether wind speeds will increase or decrease. There is 1 dominant mode explaining 95% of the variance. 
 2) Temp is still a mystery. there exists a dipole upstream and downstream 
-
-TODO: 
-stack so that space collapses on one axis and time collapses on the other... take principal compoenents in those directions. 

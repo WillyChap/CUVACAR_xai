@@ -10,7 +10,7 @@ module load conda
 conda activate /glade/work/wchapman/conda-envs/credit-coupling
 
 # Loop through all dates in 1981
-start_date="1981-02-28"
+start_date="1981-10-15"
 end_date="1981-12-31"
 
 current_date="$start_date"
