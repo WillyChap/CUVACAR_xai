@@ -2,3 +2,4 @@ kjmayer/*.e*
 dask-worker.*
 logs/
 .ipynb_checkpoints
+kjmayer/EOFanalysis/__pycache__/

@@ -1,8 +1,6 @@
-What we did on 15 May:
---> calculated EOF1 of Temperature for levxlatxlon for all of January & plotted horizontal and vertical maps
---> changed point of interest to: 25Nx60E
---> moved new EOF analysis to EOFanalysis/initialEOFanalysis.ipynb
-----> eventually we will need to create some loops around this code.
+What we did on 22 May:
+--> Wrote code to get IG EOF 1-3 of Temperature, U wind, and V wind for levxlatxlon of predicting U for JJA and DJF - figure out why dimensions are off when dataset of eof is created
+--> figure out how long all combinations will take
 
 To Do: 
 --> In LookAtOutput.ipynb, when we compare how U evolves in the prediction, we need to switch the 06Z inits to 06Z prediction!
@@ -10,9 +8,12 @@ To Do:
 --> need prediction of 06Z and baseline prediction
 
 --> Loop through all locations, seasons (or months), & key variables (e.g. T, U , V) 
-----> save out how much EOF1 & EOF2 explain
 ----> calculate tilt of dipole
 ----> find creative ways to show spatial and vertical maps of all these combinations (for example, put all EOF1 on one spatial plot!)
+--------> plot pattern, variance explained by each EOF, and tilt
+
+--> once we are happy with the IG analysis of U predictions, we need to delete U IG files (Kir is running out of space), and rerun IG for V and T predictions
+
 
 Innovation that our paper provides:
 -> variant baseline

@@ -1,7 +1,7 @@
 #!/bin/bash -l
 #PBS -N IGrun
 #PBS -l select=1:ngpus=1:gpu_type=a100_80gb:mem=120GB:ncpus=16
-#PBS -l walltime=12:00:00
+#PBS -l walltime=06:00:00
 #PBS -A "P06010014"
 #PBS -q casper@casper-pbs
 #PBS -o logs/pregen_^array_index^.log
@@ -10,7 +10,7 @@ module load conda
 conda activate /glade/work/wchapman/conda-envs/credit-coupling
 
 # Loop through all dates in 1981
-start_date="1981-10-15"
+start_date="1981-12-12"
 end_date="1981-12-31"
 
 current_date="$start_date"
