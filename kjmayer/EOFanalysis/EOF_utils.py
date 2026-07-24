@@ -2,6 +2,107 @@ import numpy as np
 import glob
 import xarray as xr
 
+
+def nearest_coordinate_index(coord, value):
+    """Return the nearest index for a nonperiodic coordinate."""
+    coord_values = np.asarray(coord.values, dtype=float)
+    return int(np.argmin(np.abs(coord_values - value)))
+
+
+def nearest_longitude_index(lon, value):
+    """Return nearest longitude index using cyclic distance."""
+    lon_values = np.asarray(lon.values, dtype=float)
+
+    # Signed cyclic difference in the range [-180, 180)
+    lon_distance = np.abs(
+        ((lon_values - value + 180.0) % 360.0) - 180.0
+    )
+
+    return int(np.argmin(lon_distance))
+
+
+def load_subsetdata(
+    lat,
+    lon,
+    lev,
+    lat_of_interest,
+    lon_of_interest,
+    lev_of_interest,
+):
+    # Robust nearest-neighbor indices
+    ilat_of_interest = nearest_coordinate_index(
+        lat,
+        lat_of_interest,
+    )
+    ilon_of_interest = nearest_longitude_index(
+        lon,
+        lon_of_interest,
+    )
+    ilev_of_interest = nearest_coordinate_index(
+        lev,
+        lev_of_interest,
+    )
+
+    ilat_of_interest_str = f"{ilat_of_interest:05d}"
+    ilon_of_interest_str = f"{ilon_of_interest:05d}"
+    ilev_of_interest_str = f"{ilev_of_interest:05d}"
+
+    dir_o = "/glade/derecho/scratch/kjmayer/CUVACAR_xai/IG/"
+
+    search_pattern = (
+        dir_o
+        + "*/tensor_steps24_parrallel_lev"
+        + ilev_of_interest_str
+        + "_lat"
+        + ilat_of_interest_str
+        + "_lon"
+        + ilon_of_interest_str
+        + ".npy"
+    )
+
+    files = sorted(glob.glob(search_pattern))
+
+    if len(files) == 0:
+        raise FileNotFoundError(
+            "No IG files found for "
+            f"lev index {ilev_of_interest}, "
+            f"lat index {ilat_of_interest}, "
+            f"lon index {ilon_of_interest}."
+        )
+
+    files_JJA = files[151:243]
+    files_DJF = np.delete(
+        np.asarray(files),
+        np.s_[59:334],
+        axis=0,
+    )
+
+    if len(files_JJA) == 0 or len(files_DJF) == 0:
+        raise ValueError(
+            f"Seasonal file selection is empty. "
+            f"Found {len(files)} total files, "
+            f"{len(files_JJA)} JJA files, and "
+            f"{len(files_DJF)} DJF files."
+        )
+
+    IG_allvars_JJA = np.stack(
+        [np.load(f).squeeze() for f in files_JJA]
+    )
+    IG_allvars_DJF = np.stack(
+        [np.load(f).squeeze() for f in files_DJF]
+    )
+
+    return (
+        IG_allvars_JJA,
+        IG_allvars_DJF,
+        ilat_of_interest,
+        ilon_of_interest,
+    )
+
+
+
+
+
 def load_subsetdata(lat, lon, lev, lat_of_interest, lon_of_interest, lev_of_interest):
     # Find associated index value for getting data
     lat_of_interest_near = lat.sel(lat=lat_of_interest, method='nearest')
@@ -30,25 +131,100 @@ def load_subsetdata(lat, lon, lev, lat_of_interest, lon_of_interest, lev_of_inte
     return IG_allvars_JJA, IG_allvars_DJF, ilat_of_interest, ilon_of_interest
 
 
-def spatial_cube_subset(IG_allvars, addval, lat, lon, lat_range_of_interest, lon_range_of_interest, ilat_of_interest, ilon_of_interest):
-    # Preprocess Data for 3D EOF
-    delta_lat = float((lat[1] - lat[0]).values)
-    delta_lon = float((lon[1] - lon[0]).values)
+def spatial_cube_subset(
+    IG_allvars,
+    addval,
+    lat,
+    lon,
+    lat_range_of_interest,
+    lon_range_of_interest,
+    ilat_of_interest,
+    ilon_of_interest,
+):
+    """
+    Extract a latitude-longitude window.
 
-    south_lat_of_interest = int(ilat_of_interest-(lat_range_of_interest/delta_lat))
-    north_lat_of_interest = int(ilat_of_interest+(lat_range_of_interest/delta_lat))
-    
-    west_lon_of_interest = int(ilon_of_interest-(lon_range_of_interest/delta_lon))
-    east_lon_of_interest = int(ilon_of_interest+(lon_range_of_interest/delta_lon))
+    Latitude is clipped at the poles.
+    Longitude wraps periodically.
+    """
 
-    if west_lon_of_interest < 0:
-        IG_allvars_cubesubset_temp = np.delete(IG_allvars, np.s_[east_lon_of_interest:west_lon_of_interest], axis=-1)
-        IG_allvars_cubesubset = IG_allvars_cubesubset_temp[:, 0+addval:32+addval, south_lat_of_interest:north_lat_of_interest]
+    lat_values = np.asarray(lat.values, dtype=float)
+    lon_values = np.asarray(lon.values, dtype=float)
 
-    else:
-        IG_allvars_cubesubset = IG_allvars[:, 0+addval:32+addval, south_lat_of_interest:north_lat_of_interest, west_lon_of_interest:east_lon_of_interest]
-    
-    return IG_allvars_cubesubset
+    delta_lat = float(np.median(np.abs(np.diff(lat_values))))
+    delta_lon = float(np.median(np.abs(np.diff(lon_values))))
+
+    nlat_radius = int(
+        np.rint(lat_range_of_interest / delta_lat)
+    )
+    nlon_radius = int(
+        np.rint(lon_range_of_interest / delta_lon)
+    )
+
+    # Include both endpoints and the central point.
+    lat_indices = np.arange(
+        ilat_of_interest - nlat_radius,
+        ilat_of_interest + nlat_radius + 1,
+    )
+
+    # Clip latitude instead of wrapping through negative indices.
+    lat_indices = lat_indices[
+        (lat_indices >= 0)
+        & (lat_indices < lat_values.size)
+    ]
+
+    # Construct unwrapped indices first, then wrap them periodically.
+    longitude_index_unwrapped = np.arange(
+        ilon_of_interest - nlon_radius,
+        ilon_of_interest + nlon_radius + 1,
+    )
+
+    lon_indices = longitude_index_unwrapped % lon_values.size
+
+    # First select the requested variable and all spatial points.
+    variable_subset = IG_allvars[
+        :,
+        addval:addval + 32,
+        :,
+        :,
+    ]
+
+    # np.take handles arbitrary index arrays cleanly.
+    cube_subset = np.take(
+        variable_subset,
+        lat_indices,
+        axis=-2,
+    )
+    cube_subset = np.take(
+        cube_subset,
+        lon_indices,
+        axis=-1,
+    )
+
+    selected_lats = lat_values[lat_indices]
+    selected_lons = lon_values[lon_indices]
+
+    # Convert a wrapped sequence such as
+    # [345, ..., 358.75, 0, 1.25, ..., 15]
+    # into a continuous sequence such as
+    # [-15, ..., 0, ..., 15].
+    selected_lons = np.rad2deg(
+        np.unwrap(
+            np.deg2rad(selected_lons)
+        )
+    )
+
+    # Shift the unwrapped coordinates so that the central longitude
+    # matches its native coordinate value.
+    center_position = nlon_radius
+    center_native = lon_values[ilon_of_interest]
+    center_unwrapped = selected_lons[center_position]
+
+    selected_lons += 360.0 * np.round(
+        (center_native - center_unwrapped) / 360.0
+    )
+
+    return cube_subset, selected_lats, selected_lons
 
 
 def eof_func(X, num_eofs=3):
@@ -72,22 +248,39 @@ def eof_func(X, num_eofs=3):
 
     return eof, pc, eigvals[:num_eofs] / np.sum(eigvals)
 
+def make_eof_ds(
+    eof_reshape,
+    pc,
+    eigvals,
+    lats,
+    lons,
+    levs,
+    eof_nums,
+):
+    eof_nums = np.asarray(eof_nums)
 
-def make_eof_ds(eof_reshape, pc, eigvals, lats, lons, levs, eof_nums):
     return xr.Dataset(
         {
             "eof_map": xr.DataArray(
                 eof_reshape,
                 dims=["lev", "lat", "lon", "eof"],
-                coords={"lev": levs, "lat": lats, "lon": lons, "eof": eof_nums},
+                coords={
+                    "lev": levs,
+                    "lat": lats,
+                    "lon": lons,
+                    "eof": eof_nums,
+                },
             ),
             "pc": xr.DataArray(
-                pc,                          # shape (time, 3)
+                pc,
                 dims=["time", "eof"],
-                coords={"eof": eof_nums},
+                coords={
+                    "time": np.arange(pc.shape[0]),
+                    "eof": eof_nums,
+                },
             ),
             "eigenvalues": xr.DataArray(
-                eigvals,                     # shape (3,)
+                eigvals,
                 dims=["eof"],
                 coords={"eof": eof_nums},
             ),
