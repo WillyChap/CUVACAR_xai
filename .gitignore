@@ -3,3 +3,4 @@ dask-worker.*
 logs/
 .ipynb_checkpoints
 kjmayer/EOFanalysis/__pycache__/
+kjmayer/EOFanalysis/*.png
