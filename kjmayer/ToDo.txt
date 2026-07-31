@@ -23,6 +23,10 @@ Innovation that our paper provides:
 IG: /glade/derecho/scratch/kjmayer/CUVACAR_xai/IG/
 baseline: /glade/derecho/scratch/wchapman/CUVACAR/init_ ...baseline.nc
 inits: /glade/derecho/scratch/kjmayer/CUVACAR_xai/init_b2014....nc
+predictions: /glade/derecho/scratch/wchapman/CUVACAR/predictions/prediction[_baseline]_init<date>_00Z_valid<date>_06Z.npy
+completeness csv: /glade/derecho/scratch/wchapman/CUVACAR/predictions/completeness.csv
+   (written by SavePredictions_XAI.py / runpredictions_baseline.sh -- on wchapman scratch
+    because kjmayer's CUVACAR_xai is not writable by other users)
 
 Environment for scripts: conda activate /glade/work/wchapman/conda-envs/credit-coupling
 
