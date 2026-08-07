@@ -1,11 +1,14 @@
-What we did on 22 May:
+What we did on 7 August:
+--> looked at XAI plots (https://docs.google.com/presentation/d/1igkueIgnA6s1xgRs7c90QGA8W1aNmBNaRUFcVfOI4HY/edit?usp=sharing)
+----> need to fix 0E centering
 --> Wrote code to get IG EOF 1-3 of Temperature, U wind, and V wind for levxlatxlon of predicting U for JJA and DJF - figure out why dimensions are off when dataset of eof is created
---> figure out how long all combinations will take
 
-To Do: 
---> In LookAtOutput.ipynb, when we compare how U evolves in the prediction, we need to switch the 06Z inits to 06Z prediction!
---> Make sure IG satisfies completeness property
---> need prediction of 06Z and baseline prediction
+To Do:
+--> There was a function with the same name but with updated code - need to rerun the northern hemisphere
+--> Project modes onto U prediction and tendency (U_t=1 - U_t=0)
+--> compare tropical vs extratropical dynamics
+--> if we move across longitudes, is there memorization of location (we would expect them to be similar across longitude)
+-----> shift all input 30E and see if predictions change
 
 --> Loop through all locations, seasons (or months), & key variables (e.g. T, U , V) 
 ----> calculate tilt of dipole
@@ -19,6 +22,8 @@ Innovation that our paper provides:
 -> variant baseline
 -> first XAI analysis of an emulator
 -> physical analysis of XAI
+
+--> Make sure IG satisfies completeness property - it does
 
 IG: /glade/derecho/scratch/kjmayer/CUVACAR_xai/IG/
 baseline: /glade/derecho/scratch/wchapman/CUVACAR/init_ ...baseline.nc
