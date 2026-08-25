@@ -1,7 +1,23 @@
-What we did on 7 August:
---> looked at XAI plots (https://docs.google.com/presentation/d/1igkueIgnA6s1xgRs7c90QGA8W1aNmBNaRUFcVfOI4HY/edit?usp=sharing)
-----> need to fix 0E centering
---> Wrote code to get IG EOF 1-3 of Temperature, U wind, and V wind for levxlatxlon of predicting U for JJA and DJF - figure out why dimensions are off when dataset of eof is created
+Discuss at our meeting on September 1st:
+-> Discuss the need to do an EOF analysis on either the input or output(predictions) physical values
+---> EOFs alone on IG is not enough to understand the physicality of the prediction
+1. One way (with EOFs on input):
+--> calculate the EOF U, V, T (input physical values)
+--> Define PC value cutoff for EOF1, 2, & 3
+--> Grab IG values for cases that make the cutoff and average
+2. Another way (no EOFs):
+--> grab all examples of extreme increase in wind in 6 hours - say top 10% 
+----> calculate average U, V, T input
+----> calculate average IG
+--> grab all examples of extreme decrease in wind in 6 hours - say top 10%
+----> calculate average U, V, T input
+----> calculate average IG
+--> take the difference of the extreme increase and decrease
+
+NOTE: still need to fix 0E centering
+https://docs.google.com/presentation/d/1igkueIgnA6s1xgRs7c90QGA8W1aNmBNaRUFcVfOI4HY/edit?usp=sharing
+
+
 
 To Do:
 --> There was a function with the same name but with updated code - need to rerun the northern hemisphere
